@@ -128,7 +128,7 @@ var enable=function(){
 		console.log(address)
 		fetch(address + "analysis?filepath="+encodeURIComponent(srcFilePath), {
 			method: 'POST',
-			body: JSON.stringify(srcFileContent)
+			body: srcFileContent
 		})
 		.then(res => res.json())
 		.then(res => {
