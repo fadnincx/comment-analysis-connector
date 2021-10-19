@@ -6,7 +6,7 @@ let charCount2Line = [0];
 /**
  * Enable/Disable marking in the corner
  */
-const enableCornerMarking = function(){
+const enableCornerMarking = function(color){
 	if( document.getElementById( 'cornerMarkingDiv' ) == null ){
 		const cornerMarking = document.createElement("div");
 		cornerMarking.id = "cornerMarkingDiv";
@@ -14,11 +14,14 @@ const enableCornerMarking = function(){
 		cornerMarking.style.height = '0px';
 		cornerMarking.style.borderStyle = 'solid';
 		cornerMarking.style.borderWidth = '0 30px 30px 0';
-		cornerMarking.style.borderColor = 'transparent #ff0000 transparent transparent';
+		cornerMarking.style.borderColor = 'transparent '+color+' transparent transparent';
 		cornerMarking.style.position = 'fixed';
 		cornerMarking.style.right = '0px';
 		cornerMarking.style.top = '0px';
 		document.body.appendChild(cornerMarking);
+	}else{
+		const cornerMarking = document.getElementById("cornerMarkingDiv")
+		cornerMarking.style.borderColor = 'transparent '+color+' transparent transparent';
 	}
 }
 const disableCornerMarking = function(){
@@ -170,8 +173,6 @@ const setAttributeForRange = function (id, from, to){
 	// initialize how many chars are still needed for the range
 	let neededChars = to - from
 
-	console.log("At "+startChar+" (line "+line+") needes "+neededChars+" chars for "+id)
-
 	// if necessary do over multiple lines
 	for(;neededChars>0&&getCodeTable().rows.length>line;++line){
 
@@ -179,8 +180,6 @@ const setAttributeForRange = function (id, from, to){
 		const row = getCodeTable().rows[line]
 		for(let i in row.cells){
 			const cell = row.cells[i]
-
-			console.log("Line "+line+" cell "+i);
 
 			// Iterate over all child elements of the cells
 			for(let j in cell.childNodes){
@@ -230,13 +229,11 @@ const setAttributeForRange = function (id, from, to){
 
 				// Else means, the range starts and ends within this child. split it up twice and include only the middle part
 				}else{
-					console.log("Dangerous split twice")
 					const el = splitElement(child, startChar);
 					splitElement(el, neededChars);
 					el.setAttribute('commentAnalysisId',id)
 					neededChars = 0
 				}
-				console.log("Still needs "+neededChars)
 			}
 			// If no further chars needed for the range, brake the loop, no unnecessary loop through cells
 			if (neededChars === 0) {
@@ -260,6 +257,7 @@ const applyResult = function (response){
 
 	})
 
+	enableCornerMarking('#00ff00');
 }
 
 
@@ -269,7 +267,7 @@ const applyResult = function (response){
 var enable=function(){
 	
 	console.log("Enable start");
-	enableCornerMarking();
+	enableCornerMarking('#ff0000');
 
 	const srcFileContent = getSourceFile();
 	if( srcFileContent.length <= 0 ) {
@@ -299,53 +297,6 @@ var enable=function(){
 		});
 	});
 
-	// console.log(file);
-
-	
-	/*addTooltip(table.rows[5], 'This is row 6');
-	addTooltip(table.rows[9], 'This is row 10');
-	
-	// GET Data from the API
-	/*
-	const response = {
-		data: [
-		{start: 60, length: 300, type: 'info'},
-		{start: 400, length: 100, type: 'summary'}
-		]
-	}
-	
-	for (let i in response.data){
-		
-		let line = chars.length;
-		for(; chars[line]>response.data[i].start; --line);
-		let waitChars = response.data[i].start - chars[line];
-		let charsNeeded = response.data[i].length;
-		let row = table.rows[line];
-		for(let j in row.cells){
-			let cell = row.cells[j];
-			for(k in cell.childNodes){
-				let child = cell.childNodes[k];
-				let txt = "";
-				if(child.textContent != null){
-					txt = child.textContent.length;
-				}else if (child.innerHTML != null){
-					txt = child.innerHTML.length;
-				}
-				if(waitChars > txt.length){
-					waitChars -= txt.length;
-				}else if (charsNeeded == 0){
-					break;
-				}else if(waitChars == 0 && txt.length<= charsNeeded){
-					
-				}
-				
-			}
-		}
-		
-	}*/
-	
-	
-	
 	console.log("Enable done");
 	
 }
