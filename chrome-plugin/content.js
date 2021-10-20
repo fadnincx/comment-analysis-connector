@@ -1,3 +1,5 @@
+// noinspection CssUnresolvedCustomProperty
+
 /**
  * Global variables
  */
@@ -243,6 +245,120 @@ const setAttributeForRange = function (id, from, to){
 	}
 }
 
+const groupBy = function (list, keyGetter){
+	const map = new Map()
+	list.forEach(item => {
+		const key = keyGetter(item)
+		key.forEach( k => {
+			const collection = map.get(k)
+			collection?collection.push(item.id):map.set(k, [item.id])
+		})
+	})
+	return map
+}
+
+const movableElement = function(el){
+
+	const wrapper = document.createElement('div')
+	el.parentElement.replaceChild(wrapper,el)
+	wrapper.appendChild(el)
+
+	wrapper.style.touchAction = 'none'
+	el.style.touchAction = 'none'
+	el.style.userSelect = 'none'
+	wrapper.style.cursor = 'pointer'
+
+	let active = false
+	let currentX, currentY, initialX, initialY, xOffset = 0, yOffset = 0;
+
+	const dragStart = function(e){
+		if (e.type === "touchstart") {
+			initialX = e.touches[0].clientX - xOffset;
+			initialY = e.touches[0].clientY - yOffset;
+		} else {
+			initialX = e.clientX - xOffset;
+			initialY = e.clientY - yOffset;
+		}
+
+		if (e.target === el || e.target.parentElement === el) {
+			active = true;
+		}
+	}
+	const dragEnd = function(e){
+		initialX = currentX;
+		initialY = currentY;
+
+		active = false;
+	}
+	const drag = function(e){
+		if (active) {
+			e.preventDefault();
+			if (e.type === "touchmove") {
+				currentX = e.touches[0].clientX - initialX;
+				currentY = e.touches[0].clientY - initialY;
+			} else {
+				currentX = e.clientX - initialX;
+				currentY = e.clientY - initialY;
+			}
+			xOffset = currentX;
+			yOffset = currentY;
+			el.style.transform = "translate3d(" + currentX + "px, " + currentY + "px, 0)";
+		}
+	}
+
+	wrapper.addEventListener("touchstart", dragStart, false);
+	wrapper.addEventListener("touchend", dragEnd, false);
+	wrapper.addEventListener("touchmove", drag, false);
+
+	wrapper.addEventListener("mousedown", dragStart, false);
+	wrapper.addEventListener("mouseup", dragEnd, false);
+	wrapper.addEventListener("mousemove", drag, false);
+
+}
+
+const labelsList = function(labelMap) {
+	if( document.getElementById( 'labelMapDiv' ) == null ){
+		const labelMapDiv = document.createElement("div");
+		labelMapDiv.id = "labelMapDiv";
+		labelMapDiv.style.borderStyle = 'solid'
+		labelMapDiv.style.borderWidth = '2'
+		labelMapDiv.style.borderColor = 'green'
+		labelMapDiv.style.position = 'fixed'
+		labelMapDiv.style.right = '50px'
+		labelMapDiv.style.top = '150px'
+		labelMapDiv.style.backgroundColor = 'var(--color-canvas-default)'
+		labelMapDiv.style.color = 'var(--color-fg-default);'
+		labelMapDiv.style.padding = '20px'
+
+		labelMapDiv.innerHTML = 'Labels<hr style="border: 1px solid var(--color-fg-default)">'
+		labelMap.forEach((value, key) => {
+
+			const labelEl = document.createElement("div")
+			labelEl.innerHTML = key
+			labelEl.style.paddingBottom = '5px'
+			labelEl.addEventListener("mouseover", function (event) {
+				value.forEach(id => {
+					document.querySelectorAll('[commentAnalysisId="' + id + '"]').forEach(el => {
+						el.style.backgroundColor = 'rgba(255,255,0,.5)'
+					})
+				})
+			}, false)
+			labelEl.addEventListener("mouseout", function (event) {
+				value.forEach(id => {
+					document.querySelectorAll('[commentAnalysisId="' + id + '"]').forEach(el => {
+						el.style.backgroundColor = null
+					})
+				})
+			}, false)
+			labelMapDiv.appendChild(labelEl)
+		})
+		document.body.appendChild(labelMapDiv);
+		movableElement(labelMapDiv)
+	}else{
+		console.warn('already has element #labelMapDiv')
+	}
+}
+
 
 const applyResult = function (response){
 	console.log("Respones is")
@@ -256,6 +372,10 @@ const applyResult = function (response){
 		})
 
 	})
+
+	const labelMap = groupBy(response, range => range.labels)
+	console.log(labelMap)
+	labelsList(labelMap)
 
 	enableCornerMarking('#00ff00');
 }
