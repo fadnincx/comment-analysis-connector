@@ -20,12 +20,8 @@ public class ApiController {
      */
     @PostMapping("/analysis")
     public AnalysisResult getAnalysis(@RequestParam String filepath, @RequestBody String src){
-        return MockAnalysis.getMockAnalysis(src, filepath);
-    }
-
-    @GetMapping("/analysis")
-    public AnalysisResult test(){
-        return MockAnalysis.getMockAnalysis(null, null);
+        return CliWrapper.analyzeCode(src, filepath);
+        //return MockAnalysis.getMockAnalysis(src, filepath);
     }
 
 }
