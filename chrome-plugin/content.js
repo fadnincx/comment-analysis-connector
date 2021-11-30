@@ -240,10 +240,10 @@ const splitElement = (el, index) => {
 	newElement.classList = el.classList
 
 	// Set content of new element to 2nd part of original element
-	newElement.innerHTML = el.innerHTML.substring(index)
+	newElement.textContent = el.textContent.substring(index)
 
 	// Remove 2nd part of content in original element
-	el.innerHTML = el.innerHTML.substr(0, index)
+	el.textContent = el.textContent.substr(0, index)
 
 	// Add new element after original element
 	el.after(newElement)
