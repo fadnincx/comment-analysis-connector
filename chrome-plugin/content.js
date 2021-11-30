@@ -38,7 +38,7 @@ const cornerMarking = (color) => {
 	}
 
 	// If no element exists, create element
-	if( document.getElementById( 'cornerMarkingDiv' ) == null ){
+	if( document.getElementById( 'cornerMarkingDiv' ) == null && color != null ){
 		const cornerMarking = document.createElement("div")
 		cornerMarking.id = "cornerMarkingDiv"
 		cornerMarking.style.width = '0px'
