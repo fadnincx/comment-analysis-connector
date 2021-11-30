@@ -46,11 +46,11 @@ public class CliWrapper {
         try{
             switch (extension){
                 case "java":
-                    return mapToAnalysisResultWrapper(javaClassifier.classify(src));
+                    return mapToAnalysisResultWrapper(javaClassifier.label(src));
                 case "py":
-                    return mapToAnalysisResultWrapper(pythonClassifier.classify(src));
+                    return mapToAnalysisResultWrapper(pythonClassifier.label(src));
                 case "sm":
-                    return mapToAnalysisResultWrapper(smalltalkClassifier.classify(src));
+                    return mapToAnalysisResultWrapper(smalltalkClassifier.label(src));
             }
         }catch (Exception e){
             return new AnalysisResult(2, "An Error occured when classifiying the comments!", new ArrayList<>());
